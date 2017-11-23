@@ -12,19 +12,28 @@ $('#country-name').keypress(function (e) {
 
 function searchCountries() {
  let countryName = $('#country-name').val();
-if(!countryName.length) countryName = 'Poland';
-$.ajax({
+  if(!countryName.length) {
+    countryName = 'Poland';
+  } 
+  $.ajax({
      url: url + countryName,
      method: 'GET',
-     success: showCountries,
+     success: function(data)
+     {
+      const filteredResp = data.filter(function (el) {
+        const regex = new RegExp('^' + countryName, 'gi')
+        return regex.test(el.name);
+      })
+      showCountries(filteredResp)
+     },
      error: showErrorMessage
-   });
+  });
   
 }
 
-function showCountries(resp) {
+function showCountries(filteredResp) {
   countriesList.empty();
-  resp.forEach(function(item) {
+  filteredResp.forEach(function(item) {
     const $country = $('<div>').addClass('country');
     const $countryIntro = $('<div>').addClass('country-intro');
     const $countryInfo = $('<div>').addClass('country-info').append($('<h4>').text('Background info:'));
@@ -36,9 +45,9 @@ function showCountries(resp) {
     const $countryCapital = $('<p>').text('Capital: ' + item.capital);
     const $countryPopulation = $('<p>').text('Population: ' + item.population);
 
-    let $countryLanguagesArr = [];
-    item.languages.forEach(function (value) {
-      $countryLanguagesArr.push(value.name)
+    const $countryLanguagesArr = [];
+    item.languages.map(function (value, index) {
+      $countryLanguagesArr[index] = value.name;
     })
 
     const $countryLanguages = $('<p>').text('Language(s): ' + $countryLanguagesArr.join(', '));
