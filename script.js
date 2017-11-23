@@ -23,7 +23,7 @@ function searchCountries() {
       const filteredResp = data.filter(function (el) {
         const regex = new RegExp('^' + countryName, 'gi')
         return regex.test(el.name);
-      })
+        })
       showCountries(filteredResp)
      },
      error: showErrorMessage
